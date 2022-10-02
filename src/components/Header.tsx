@@ -1,6 +1,6 @@
 export default function Header() {
   return (
-    <>
+    <div className="flex items-center justify-center">
       <div className="before:block before:absolute before:-inset-1 before:-skew-y-3 before:bg-black relative inline-block">
         <h1 className="relative text-transparent bg-gradient-rainbow bg-clip-text font-extrabold">
           Calculadora
@@ -11,6 +11,6 @@ export default function Header() {
           Rainbow
         </h1>
       </div>
-    </>
+    </div>
   );
 }
