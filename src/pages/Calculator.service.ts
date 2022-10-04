@@ -1,5 +1,9 @@
 export function CalculatorService() {
-  function calculate(number1: number, number2: number, operator: string) {
+  function calculate(
+    number1: number,
+    number2: number,
+    operator: string | null
+  ) {
     const operatorInvalid =
       !operator || !['+', '-', '*', '/'].includes(operator);
 
@@ -16,7 +20,10 @@ export function CalculatorService() {
       : result[operator as keyof typeof result];
   }
 
-  function concatenateNumber(currentNumber: string, concatNumber: string) {
+  function concatenateNumber(
+    currentNumber: string | null,
+    concatNumber: string
+  ) {
     // caso contenha apenas '0' ou null, reinicie o valor
     if (currentNumber === '0' || currentNumber === null) {
       currentNumber = '';

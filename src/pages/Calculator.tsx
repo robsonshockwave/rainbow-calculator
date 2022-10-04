@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Button from '../components/Button';
 import Header from '../components/Header';
+import { CalculatorService } from './Calculator.service';
 
 export default function Calculator() {
   const customButtonClear = 'bg-red-500 rounded-sm border-purple-700 border-2';
@@ -19,12 +20,64 @@ export default function Calculator() {
 
   const [txtNumbers, setTxtNumbers] = useState('0');
 
+  const { calculate, concatenateNumber } = CalculatorService();
+  const [number1, setNumber1] = useState('0');
+  const [number2, setNumber2] = useState(null as string | null);
+  const [operation, setOperation] = useState(null as string | null);
+
   function addNumber(number: string) {
-    setTxtNumbers((state) => (state = txtNumbers + number));
+    let result: string;
+
+    if (operation === null) {
+      result = concatenateNumber(number1, number);
+      setNumber1((state) => (state = result));
+    } else {
+      result = concatenateNumber(number2, number);
+      setNumber2((state) => (state = result));
+    }
+
+    setTxtNumbers((state) => (state = result));
   }
 
   function defineOperation(op: string) {
-    setTxtNumbers((state) => (state = txtNumbers + op));
+    // apenas define a operação caso ela não exista
+    if (operation === null) {
+      setOperation((state) => (state = op));
+      return;
+    }
+
+    // caso a operaçãp estiver definida e número 2 selecionado, realiza o cálculo da operação
+    if (number2 !== null) {
+      const result = calculate(
+        parseFloat(number1),
+        parseFloat(number2),
+        operation
+      );
+      setOperation((state) => (state = op));
+      setNumber1((state) => (state = result.toString()));
+      setNumber2(null);
+      setTxtNumbers((state) => (state = result.toString()));
+    }
+  }
+
+  function calculateAction() {
+    if (number2 === null) {
+      return;
+    }
+
+    const result = calculate(
+      parseFloat(number1),
+      parseFloat(number2),
+      operation
+    );
+    setTxtNumbers((state) => (state = result.toString()));
+  }
+
+  function clear() {
+    setTxtNumbers('0');
+    setNumber1('0');
+    setNumber2(null);
+    setOperation(null);
   }
 
   return (
@@ -38,7 +91,7 @@ export default function Calculator() {
               customButton={customButtonClear}
               customText={customTextClear}
               text="AC"
-              onClick={() => {}}
+              onClick={clear}
             />
             <form className="col-start-2 col-end-5">
               <input
@@ -161,13 +214,15 @@ export default function Calculator() {
               customButton={customButtonNumber}
               customText={customTextNumber}
               text="."
-              onClick={() => {}}
+              onClick={() => {
+                addNumber('.');
+              }}
             />
             <Button
               customButton={customButtonEqual}
               customText={customTextEqual}
               text="="
-              onClick={() => {}}
+              onClick={calculateAction}
             />
             <Button
               customButton={customButtonOperator}
